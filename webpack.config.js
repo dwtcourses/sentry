@@ -330,6 +330,11 @@ const legacyCssConfig = {
     extensions: ['.less', '.js'],
     modules: [staticPrefix, 'node_modules'],
   },
+  resolveLoader: {
+    plugins: [
+      PnpWebpackPlugin.moduleLoader(module),
+    ],
+  },
   module: {
     rules: [
       {

@@ -166,6 +166,26 @@ class TagStorageTest(SnubaTestCase):
             'foo'
         ) == 2
 
+    def test_get_tag_keys(self):
+        expected_keys = set([
+            'baz', 'browser', 'environment', 'foo', 'sentry:release', 'sentry:user',
+        ])
+        keys = {
+            k.key: k for k in self.ts.get_tag_keys(
+                project_id=self.proj1.id,
+                environment_id=self.proj1env1.id,
+            )
+        }
+        assert set(keys) == expected_keys
+        keys = {
+            k.key: k for k in self.ts.get_tag_keys(
+                project_id=self.proj1.id,
+                environment_id=self.proj1env1.id,
+                include_values_seen=True,
+            )
+        }
+        assert set(keys) == expected_keys
+
     def test_get_group_tag_key(self):
         with pytest.raises(GroupTagKeyNotFound):
             self.ts.get_group_tag_key(

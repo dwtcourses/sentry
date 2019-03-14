@@ -199,12 +199,19 @@ class SnubaTagStorage(TagStorage):
         else:
             ctor = functools.partial(GroupTagKey, group_id=group_id)
 
-        return set([
-            ctor(
-                key=key,
-                count=count,
-            ) for key, count in six.iteritems(result)
-        ])
+        results = set()
+        for key, data in six.iteritems(result):
+            params = {'key': key}
+            if include_values_seen:
+                params['values_seen'] = data['values_seen']
+                params['count'] = data['count']
+            else:
+                # If only one aggregate is requested then data is just that raw
+                # aggregate value, rather than a dictionary of
+                # key:aggregate_value pairs
+                params['count'] = data
+            results.add(ctor(**params))
+        return results
 
     def __get_tag_value(self, project_id, group_id, environment_id, key, value):
         start, end = self.get_time_range()
